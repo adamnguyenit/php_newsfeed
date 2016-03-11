@@ -1,0 +1,19 @@
+{
+    "name": "adamnguyenit/php_newsfeed",
+    "description": "This is a package for newsfeed module for PHP. It uses Cassandra >= 2.x to store data and control your feeds system.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Adam Nguyen",
+            "email": "adamnguyen.itdn@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Newsfeed\\": "src/"
+        }
+    }
+}

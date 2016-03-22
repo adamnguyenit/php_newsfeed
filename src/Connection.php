@@ -26,7 +26,7 @@ class Connection
     /**
      * executes cql
      */
-    public static function exec_cql($cql, $opt = [])
+    public static function execCql($cql, $opt = [])
     {
         return static::connection()->execute(new \Cassandra\SimpleStatement($cql), new \Cassandra\ExecutionOptions($opt));
     }
@@ -34,7 +34,7 @@ class Connection
     /**
      * batchs cqls
      */
-    public static function batch_cqls($cqls, $opt = [])
+    public static function batchCql($cqls, $opt = [])
     {
         $batch = new BatchStatement();
         foreach ($cqls as $cql) {
@@ -48,7 +48,7 @@ class Connection
     /**
      * exports a value to cassandra value
      */
-    public static function cass_val($val, $type)
+    public static function $cassVal($val, $type)
     {
         if ($type === 'uuid') {
             return $val;
@@ -68,27 +68,27 @@ class Connection
     /**
      * exports values to cassandra values
      */
-    public static function cass_vals($schema, $vals)
+    public static function cassVals($schema, $vals)
     {
-        $cass_vals = [];
+        $cassVals = [];
         foreach ($vals as $col => $val) {
             if (!empty($schema[$cal])) {
-                $cass_vals[] = static::cass_val($val, $schema[$col]);
+                $cassVals[] = static::$cassVal($val, $schema[$col]);
             }
         }
-        return implode(',', $cass_vals);
+        return implode(',', $cassVals);
     }
 
     /**
      * exports column value pair
      */
-    public static function exported_col_val($schema, $col_val_pair)
+    public static function exportedColVal($schema, $col_val_pair)
     {
         $arr = [];
         foreach ($col_val_pair as $col => $val) {
             if (!empty($schema[$col])) {
-                $cass_val = static::cass_val($val, $schema[$col]);
-                $arr[] = "$col=$cass_val";
+                $$cassVal = static::$cassVal($val, $schema[$col]);
+                $arr[] = "$col=$$cassVal";
             }
         }
         return $arr;
@@ -97,7 +97,7 @@ class Connection
     /**
      * selects
      */
-    public static function select($tbl, $schema = [], $cols = '*', $cond = [], $opt = [], $to_cql = false)
+    public static function select($tbl, $schema = [], $cols = '*', $cond = [], $opt = [], $toCql = false)
     {
         $cql = 'SELECT ';
         if (is_array($cols)) {
@@ -107,7 +107,7 @@ class Connection
         }
         $cql .= " FROM $tbl";
         if (!empty($cond)) {
-            $exported = static::exported_col_val($schema, $cond);
+            $exported = static::exportedColVal($schema, $cond);
             $exported = implode(' AND ', $exported);
             if (!empty($exported)) {
                 $cql .= " WHERE $exported";
@@ -117,53 +117,53 @@ class Connection
             $cql .= ' ALLOW FILTERING';
             unset($opt['filtering']);
         }
-        if ($to_cql) {
+        if ($toCql) {
             return $cql;
         }
-        return static::exec_cql($cql, $opt);
+        return static::execCql($cql, $opt);
     }
 
     /**
      * inserts
      */
-    public static function insert($tbl, $schema, $vals, $to_cql = false)
+    public static function insert($tbl, $schema, $vals, $toCql = false)
     {
         $keys = implode(',', array_keys($schema));
-        $cass_cqls = static::cass_vals($schema, $vals);
-        $cql = "INSERT INTO $tbl ($keys) VALUES ($cass_vals)";
-        if ($to_cql) {
+        $cassVals = static::cassVals($schema, $vals);
+        $cql = "INSERT INTO $tbl ($keys) VALUES ($cassVals)";
+        if ($toCql) {
             return $cql;
         }
-        static::exec_cql($cql, $opt);
+        static::execCql($cql, $opt);
         return true;
     }
 
     /**
      * updates
      */
-    public static function update($tbl, $schema, $cond, $vals, $to_cql = false)
+    public static function update($tbl, $schema, $cond, $vals, $toCql = false)
     {
-        $exported_vals = implode(',', static::exported_col_val($schema, $vals));
-        $exported_cond = implode(' AND ', static::exported_col_val($schema, $cond));
-        $cql = "UPDATE $tbl SET $exported_vals WHERE $exported_cond";
-        if ($to_cql) {
+        $exported_vals = implode(',', static::exportedColVal($schema, $vals));
+        $exportedCond = implode(' AND ', static::exportedColVal($schema, $cond));
+        $cql = "UPDATE $tbl SET $exported_vals WHERE $exportedCond";
+        if ($toCql) {
             return $cql;
         }
-        static::exec_cql($cql, $opt);
+        static::execCql($cql, $opt);
         return true;
     }
 
     /**
      * deletes
      */
-    public static function delete($tbl, $schema, $cond, $to_cql = false)
+    public static function delete($tbl, $schema, $cond, $toCql = false)
     {
-        $exported_cond = implode(' AND ', static::exported_col_val($schema, $cond));
-        $cql = "DELETE FROM $tbl WHERE $exported_cond";
-        if ($to_cql) {
+        $exportedCond = implode(' AND ', static::exportedColVal($schema, $cond));
+        $cql = "DELETE FROM $tbl WHERE $exportedCond";
+        if ($toCql) {
             return $cql;
         }
-        static::exec_cql($cql, $opt);
+        static::execCql($cql, $opt);
         return true;
     }
 }

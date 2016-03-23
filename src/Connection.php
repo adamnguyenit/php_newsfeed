@@ -2,15 +2,33 @@
 
 namespace Newsfeed;
 
+/**
+ * Class Connection for Cassandra communication
+ *
+ * @package Newsfeed
+ * @author Adam Nguyen <adamnguyen.itdn@gmail.com>
+ */
 class Connection
 {
 
+    /**
+     * Cassandra connection
+     *
+     * @var \Cassandra\DefaultSession
+     */
     protected static $_connection;
 
+    /**
+     * Configuration
+     *
+     * @var array
+     */
     public static $config = [];
 
     /**
      * gets cassandra connection
+     *
+     * @return \Cassandra\DefaultSession
      */
     public static function connection()
     {
@@ -25,6 +43,11 @@ class Connection
 
     /**
      * executes cql
+     *
+     * @param string $cql CQL query
+     * @param array $opt Options
+     *
+     * @return \Cassandra\Rows
      */
     public static function execCql($cql, $opt = [])
     {
@@ -33,6 +56,11 @@ class Connection
 
     /**
      * batchs cqls
+     *
+     * @param string[] $cqls CQL queries
+     * @param array $opt Options
+     *
+     * @return \Cassandra\Rows
      */
     public static function batchCql($cqls, $opt = [])
     {
@@ -47,6 +75,11 @@ class Connection
 
     /**
      * exports a value to cassandra value
+     *
+     * @param mixed $val Value
+     * @param string $type Type of value
+     *
+     * @return mixed
      */
     public static function $cassVal($val, $type)
     {
@@ -67,6 +100,11 @@ class Connection
 
     /**
      * exports values to cassandra values
+     *
+     * @param array $schema Schema
+     * @param array $vals Values
+     *
+     * @return string
      */
     public static function cassVals($schema, $vals)
     {
@@ -81,11 +119,16 @@ class Connection
 
     /**
      * exports column value pair
+     *
+     * @param array $schema Schema
+     * @param array $colValPair Columns values pairs
+     *
+     * @return string[]
      */
-    public static function exportedColVal($schema, $col_val_pair)
+    public static function exportedColVal($schema, $colValPair)
     {
         $arr = [];
-        foreach ($col_val_pair as $col => $val) {
+        foreach ($colValPair as $col => $val) {
             if (!empty($schema[$col])) {
                 $$cassVal = static::$cassVal($val, $schema[$col]);
                 $arr[] = "$col=$$cassVal";
@@ -96,6 +139,15 @@ class Connection
 
     /**
      * selects
+     *
+     * @param string $tbl Table name
+     * @param array $schema Schema
+     * @param string|string[] $cols Selected columns
+     * @param array $cond Conditions
+     * @param array $opt Options
+     * @param bool $toCql Return cql instead selected result
+     *
+     * @return \Cassandra\Rows|string
      */
     public static function select($tbl, $schema = [], $cols = '*', $cond = [], $opt = [], $toCql = false)
     {
@@ -125,6 +177,13 @@ class Connection
 
     /**
      * inserts
+     *
+     * @param string $tbl Table name
+     * @param array $schema Schema
+     * @param array $vals Values
+     * @param bool $toCql Return cql instead selected result
+     *
+     * @return bool|string
      */
     public static function insert($tbl, $schema, $vals, $toCql = false)
     {
@@ -140,6 +199,14 @@ class Connection
 
     /**
      * updates
+     *
+     * @param string $tbl Table name
+     * @param array $schema Schema
+     * @param array $cond Conditions
+     * @param array $vals Values
+     * @param bool $toCql Return cql instead selected result
+     *
+     * @return bool|string
      */
     public static function update($tbl, $schema, $cond, $vals, $toCql = false)
     {
@@ -155,6 +222,13 @@ class Connection
 
     /**
      * deletes
+     *
+     * @param string $tbl Table name
+     * @param array $schema Schema
+     * @param array $cond Conditions
+     * @param bool $toCql Return cql instead selected result
+     *
+     * @return bool|string
      */
     public static function delete($tbl, $schema, $cond, $toCql = false)
     {

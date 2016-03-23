@@ -2,14 +2,30 @@
 
 namespace Newsfeed;
 
+/**
+ * Class FeedTable for store all feed models
+ *
+ * @package Newsfeed
+ * @author Adam Nguyen <adamnguyen.itdn@gmail.com>
+ */
 class FeedTable
 {
 
+    /**
+     * gets table name
+     *
+     * @return string
+     */
     public static function tableName()
     {
         return 'feed_table';
     }
 
+    /**
+     * gets schema
+     *
+     * @return array
+     */
     public static function schema()
     {
         return [
@@ -17,16 +33,35 @@ class FeedTable
         ];
     }
 
-    public static function create($tbl_class)
+    /**
+     * adds a model
+     *
+     * @param string $tblClass Classname of model
+     *
+     * @return bool
+     */
+    public static function create($tblClass)
     {
-        return Connection::insert(static::tableName(), static::schema(), ['table_class' => $tbl_class]);
+        return Connection::insert(static::tableName(), static::schema(), ['table_class' => $tblClass]);
     }
 
-    public static function delete($tbl_class)
+    /**
+     * deletes a model
+     *
+     * @param string $tblClass Classname of model
+     *
+     * @return bool
+     */
+    public static function delete($tblClass)
     {
-        return Connection::delete(static::tableName(), static::schema(), ['table_class' => $tbl_class]);
+        return Connection::delete(static::tableName(), static::schema(), ['table_class' => $tblClass]);
     }
 
+    /**
+     * gets all models
+     *
+     * @return NewsfeedModel[]
+     */
     public static function all()
     {
         $items = [];
@@ -37,5 +72,4 @@ class FeedTable
         }
         return $items;
     }
-
 }

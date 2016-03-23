@@ -2,18 +2,41 @@
 
 namespace Newsfeed;
 
+/**
+ * Class Relation relation between models
+ *
+ * @package Newsfeed
+ * @author Adam Nguyen <adamnguyen.itdn@gmail.com>
+ */
 class Relation
 {
+
+    /**
+     * gets table name
+     *
+     * @return string
+     */
     public static function tableName()
     {
         return 'relation';
     }
 
+
+    /**
+     * gets index table name
+     *
+     * @return string
+     */
     public static function indexTableName()
     {
         return static::tableName() . '_index';
     }
 
+    /**
+     * gets schema
+     *
+     * @return array
+     */
     public static function schema()
     {
         return [
@@ -25,6 +48,15 @@ class Relation
         ];
     }
 
+    /**
+     * creates relations
+     *
+     * @param NewsfeedModel $from From
+     * @param NewsfeedModel $to To
+     * @param array $opt Options
+     *
+     * @return bool
+     */
     public static function create($from, $to, $opt = [])
     {
         $id = (new Cassandra::Timeuuid())->uuid();
@@ -56,6 +88,15 @@ class Relation
         return true;
     }
 
+    /**
+     * deletes relations
+     *
+     * @param NewsfeedModel $from From
+     * @param NewsfeedModel $to To
+     * @param array $opt Options
+     *
+     * @return bool
+     */
     public static function delete($from, $to, $opt = [])
     {
         $cond = [
@@ -80,6 +121,13 @@ class Relation
         return true;
     }
 
+    /**
+     * gets related models
+     *
+     * @param NewsfeedModel $from From
+     *
+     * @return NewsfeedModel[]
+     */
     public static function relatedOf($from)
     {
         $relateds = [];
@@ -95,6 +143,14 @@ class Relation
         return $relateds;
     }
 
+    /**
+     * checks is related
+     *
+     * @param NewsfeedModel $from From
+     * @param NewsfeedModel $to To
+     *
+     * @return bool
+     */
     public static function isRelated($from, $to)
     {
         $cond = [

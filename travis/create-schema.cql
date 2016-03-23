@@ -1,5 +1,5 @@
-CREATE KEYSPACE rails_newsfeed_test WITH REPLICATION = { 'class': 'SimpleStrategy', 'replication_factor': 3 };
-USE rails_newsfeed_test;
+CREATE KEYSPACE php_newsfeed_test WITH REPLICATION = { 'class': 'SimpleStrategy', 'replication_factor': 3 };
+USE php_newsfeed_test;
 CREATE TABLE activity (id uuid, content text, time timestamp, object text, PRIMARY KEY (id));
 CREATE TABLE activity_index (id uuid, content text, time timestamp, object text, PRIMARY KEY ((object), id));
 CREATE TABLE feed_table (table_class text, PRIMARY KEY (table_class));

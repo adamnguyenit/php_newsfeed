@@ -1,1 +1,1 @@
-DROP KEYSPACE rails_newsfeed_test;
+DROP KEYSPACE php_newsfeed_test;

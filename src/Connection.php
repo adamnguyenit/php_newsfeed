@@ -81,7 +81,7 @@ class Connection
      *
      * @return mixed
      */
-    public static function $cassVal($val, $type)
+    public static function cassVal($val, $type)
     {
         if ($type === 'uuid') {
             return $val;

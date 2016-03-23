@@ -1,8 +1,13 @@
 language: php
-rvm:
+php:
   - '5.5'
   - '5.6'
   - '7.0'
+  - hhvm
+  - nightly
+
+install:
+  - ./travis/install-cassandra-driver.sh
 
 services:
   - cassandra
@@ -12,3 +17,6 @@ before_script:
 
 after_script:
   - cqlsh -f travis/drop-schema.cql
+
+script:
+  - phpunit tests --bootstrap vendor/autoload.php

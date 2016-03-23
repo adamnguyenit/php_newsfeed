@@ -6,6 +6,8 @@ php:
   - hhvm
   - nightly
 
+sudo: required
+
 install:
   - ./travis/install-cassandra-driver.sh
 

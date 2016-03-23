@@ -11,6 +11,9 @@
     "require": {
         "php": ">=5.5"
     },
+    "require-dev": {
+        "codeclimate/php-test-reporter": "dev-master"
+    },
     "autoload": {
         "psr-4": {
             "Newsfeed\\": "src/"

@@ -1,0 +1,14 @@
+language: php
+rvm:
+  - '5.5'
+  - '5.6'
+  - '7.0'
+
+services:
+  - cassandra
+
+before_script:
+  - cqlsh -f travis/create-schema.cql
+
+after_script:
+  - cqlsh -f travis/drop-schema.cql

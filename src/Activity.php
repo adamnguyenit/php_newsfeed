@@ -2,25 +2,75 @@
 
 namespace Newsfeed;
 
+/**
+ * Class Activity instance of activities
+ *
+ * @package Newsfeed
+ * @author Adam Nguyen <adamnguyen.itdn@gmail.com>
+ */
 class Activity
 {
 
+    /**
+     * Id of activity
+     *
+     * @var string
+     */
     public $id;
+
+    /**
+     * Content of activity
+     *
+     * @var string
+     */
     public $content;
+
+    /**
+     * Object of activity
+     *
+     * @var string
+     */
     public $object;
+
+    /**
+     * Time of activity
+     *
+     * @var string
+     */
     public $time;
+
+    /**
+     * Is new record
+     *
+     * @var bool
+     */
     public $new_record;
 
+    /**
+     * gets table name
+     *
+     * @return string
+     */
     public static function tableName()
     {
         return 'activity';
     }
 
+    /**
+     * gets index table name
+     *
+     * @return string
+     */
     public static function indexTableName()
     {
         return static::tableName() . '_index';
     }
 
+    /**
+     * gets schema
+     *
+     * @return array
+     */
     public static function schema()
     {
         return [
@@ -31,6 +81,11 @@ class Activity
         ];
     }
 
+    /**
+     * finds by id
+     *
+     * @return static
+     */
     public static function find($id)
     {
         $r = Connection::select(static::tableName(), static::schema(), '*', ['id' => $id], ['page_size' => 1])->first();
@@ -40,6 +95,11 @@ class Activity
         return new static(['id' => $r['id']->uuid(), 'content' => $r['content'], 'time' => $r['time'], 'object' => $r['object'], 'new_record' => false]);
     }
 
+    /**
+     * hides all feeds of object
+     *
+     * @return bool
+     */
     public static function hideAllOf($object)
     {
         if (empty($this->object)) {
@@ -53,6 +113,14 @@ class Activity
         return true;
     }
 
+    /**
+     * deletes from feeds
+     *
+     * @param mixed $id Id of model
+     * @param \Cassandra\Rows $last Last activity will be showed
+     *
+     * @return bool
+     */
     public static function deleteFromFeed($id, $last = null)
     {
         $cqls = [];
@@ -75,6 +143,14 @@ class Activity
         return true;
     }
 
+    /**
+     * deletes
+     *
+     * @param string $id Activity Id
+     * @param bool $showLast Show the last result
+     *
+     * @return bool
+     */
     public static function delete($id, $showLast = true)
     {
         $act = static::find($id);
@@ -84,6 +160,9 @@ class Activity
         return $act->delete();
     }
 
+    /**
+     * initials a new instance
+     */
     public function __construct($opt = [])
     {
         if (!empty($opt['id'])) {
@@ -109,6 +188,11 @@ class Activity
         }
     }
 
+    /**
+     * saves
+     *
+     * @return bool
+     */
     public function save()
     {
         if ($this->new_record) {
@@ -118,6 +202,11 @@ class Activity
         }
     }
 
+    /**
+     * deletes
+     *
+     * @return bool
+     */
     public function delete()
     {
         if ($this->new_record === true) {
@@ -136,6 +225,11 @@ class Activity
         return static::deleteFromFeed($this->id, $last);
     }
 
+    /**
+     * converts to array
+     *
+     * @return array
+     */
     public function toArray()
     {
         return [
@@ -146,6 +240,11 @@ class Activity
         ];
     }
 
+    /**
+     * inserts
+     *
+     * @return bool
+     */
     protected function insert()
     {
         if (!Connection::insert(static::tableName(), static::schema(), $this->toArray())) {
@@ -161,6 +260,11 @@ class Activity
         return true;
     }
 
+    /**
+     * updates
+     *
+     * @return bool
+     */
     protected function update()
     {
         return Connection::update((static::tableName(), static::schema(), ['id' => $this->id], $this->toArray());

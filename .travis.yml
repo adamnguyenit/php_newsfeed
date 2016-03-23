@@ -8,8 +8,8 @@ php:
 
 sudo: required
 
-install:
-  - ./travis/install-cassandra-driver.sh
+before_install:
+  - sudo ./travis/install-cassandra-driver.sh
 
 services:
   - cassandra

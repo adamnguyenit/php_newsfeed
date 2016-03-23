@@ -9,6 +9,7 @@ php:
 sudo: required
 
 before_install:
+  - echo "deb http://us.archive.ubuntu.com/ubuntu trusty main universe" | sudo tee -a /etc/apt/sources.list
   - sudo apt-get install g++ make cmake libuv-dev libssl-dev libgmp-dev php5 php5-dev openssl libpcre3-dev git -y
   - git clone https://github.com/datastax/php-driver.git
   - cd php-driver

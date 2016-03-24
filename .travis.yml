@@ -18,6 +18,8 @@ before_install:
   - cd ext
   - sudo ./install.sh
   - sudo echo -e "; DataStax PHP Driver\nextension=cassandra.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
+  - cd ../..
+  - composer install
 
 services:
   - cassandra

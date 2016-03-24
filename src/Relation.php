@@ -59,7 +59,7 @@ class Relation
      */
     public static function create($from, $to, $opt = [])
     {
-        $id = (new Cassandra::Timeuuid())->uuid();
+        $id = (new \Cassandra\Timeuuid())->uuid();
         $r = [
             'id' => $id,
             'from_class' => get_class($from),
@@ -168,6 +168,6 @@ class Relation
             'from_class' => $t['from_class'],
             'from_id' => $t['from_id']
         ];
-        return !empty(Connection.select(static::tableName(), static::schema(), '*', $c)->first());
+        return !empty(Connection::select(static::tableName(), static::schema(), '*', $c)->first());
     }
 }

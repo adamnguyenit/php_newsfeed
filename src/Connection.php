@@ -16,7 +16,7 @@ class Connection
      *
      * @var \Cassandra\DefaultSession
      */
-    protected static $_connection;
+    protected static $_connection = null;
 
     /**
      * Configuration
@@ -36,9 +36,31 @@ class Connection
             if (empty(static::$config) || empty(static::$config['keyspace'])) {
                 return null;
             }
-            static::$_connection = \Cassandra::cluster()->build()->connect(static::$config['keyspace']);
+            $builder = \Cassandra::cluster();
+            if (isset(static::$config['hosts'])) {
+                $hosts = is_array(static::$config['hosts']) ? static::$config['hosts'] : [static::$config['hosts']];
+                call_user_func_array([$builder, 'withContactPoints'], $hosts);
+            }
+            if (isset(static::$config['port'])) {
+                $builder->withPort(static::$config['port']);
+            }
+            if (isset(static::$config['username']) && isset(static::$config['password'])) {
+                $builder->withCredentials(static::$config['username'], static::$config['password']);
+            }
+            static::$_connection = $builder->build()->connect(static::$config['keyspace']);
         }
         return static::$_connection;
+    }
+
+    /**
+     * closes current connection
+     */
+    public static function close()
+    {
+        if (!empty(static::$_connection)) {
+            static::$_connection->close();
+        }
+        static::$_connection = null;
     }
 
     /**
@@ -64,10 +86,10 @@ class Connection
      */
     public static function batchCql($cqls, $opt = [])
     {
-        $batch = new BatchStatement();
+        $batch = new \Cassandra\BatchStatement();
         foreach ($cqls as $cql) {
             if (!empty($cql)) {
-                $batch.add(new \Cassandra\SimpleStatement($cql));
+                $batch->add(new \Cassandra\SimpleStatement($cql));
             }
         }
         return static::connection()->execute($batch, new \Cassandra\ExecutionOptions($opt));
@@ -83,6 +105,9 @@ class Connection
      */
     public static function cassVal($val, $type)
     {
+        if ($val === null) {
+            return 'null';
+        }
         if ($type === 'uuid') {
             return $val;
         }
@@ -93,7 +118,7 @@ class Connection
             return doubleval($val);
         }
         if (in_array($type, ['ascii', 'text', 'varchar', 'timestamp'])) {
-            return str_replace("'", "''", strval($val));
+            return "'" . str_replace("'", "''", strval($val)) . "'";
         }
         return null;
     }
@@ -110,8 +135,8 @@ class Connection
     {
         $cassVals = [];
         foreach ($vals as $col => $val) {
-            if (!empty($schema[$cal])) {
-                $cassVals[] = static::$cassVal($val, $schema[$col]);
+            if (!empty($schema[$col])) {
+                $cassVals[] = static::cassVal($val, $schema[$col]);
             }
         }
         return implode(',', $cassVals);
@@ -130,8 +155,8 @@ class Connection
         $arr = [];
         foreach ($colValPair as $col => $val) {
             if (!empty($schema[$col])) {
-                $$cassVal = static::$cassVal($val, $schema[$col]);
-                $arr[] = "$col=$$cassVal";
+                $cassVal = static::cassVal($val, $schema[$col]);
+                $arr[] = "$col=$cassVal";
             }
         }
         return $arr;
@@ -193,7 +218,7 @@ class Connection
         if ($toCql) {
             return $cql;
         }
-        static::execCql($cql, $opt);
+        static::execCql($cql);
         return true;
     }
 
@@ -216,7 +241,7 @@ class Connection
         if ($toCql) {
             return $cql;
         }
-        static::execCql($cql, $opt);
+        static::execCql($cql);
         return true;
     }
 
@@ -237,7 +262,7 @@ class Connection
         if ($toCql) {
             return $cql;
         }
-        static::execCql($cql, $opt);
+        static::execCql($cql);
         return true;
     }
 }

@@ -92,7 +92,12 @@ class Activity
         if (empty($r)) {
             return null;
         }
-        return new static(['id' => $r['id']->uuid(), 'content' => $r['content'], 'time' => $r['time'], 'object' => $r['object'], 'new_record' => false]);
+        if ($r['time'] === null) {
+            $time = null;
+        } else {
+            $time = static::formatTimestamp($r['time']->time());
+        }
+        return new static(['id' => $r['id']->uuid(), 'content' => $r['content'], 'time' => $time, 'object' => $r['object'], 'new_record' => false]);
     }
 
     /**
@@ -134,30 +139,13 @@ class Activity
                         'activity_content' => $last['content'],
                         'activity_object' => $last['object'],
                         'activity_time' => $last['time']
-                    ]
+                    ];
                     $cqls[] = Connection::insert($i->tableName(), $i->schema(), $n, true);
                 }
             }
         }
         Connection::batchCql(array_unique($cqls));
         return true;
-    }
-
-    /**
-     * deletes
-     *
-     * @param string $id Activity Id
-     * @param bool $showLast Show the last result
-     *
-     * @return bool
-     */
-    public static function delete($id, $showLast = true)
-    {
-        $act = static::find($id);
-        if (empty($act)) {
-            return true;
-        }
-        return $act->delete();
     }
 
     /**
@@ -168,7 +156,7 @@ class Activity
         if (!empty($opt['id'])) {
             $this->id = $opt['id'];
         } else {
-            $this->id = (new Cassandra::Timeuuid())->uuid();
+            $this->id = (new \Cassandra\Timeuuid())->uuid();
         }
         if (!empty($opt['content'])) {
             $this->content = $opt['content'];
@@ -179,7 +167,7 @@ class Activity
         if (!empty($opt['time'])) {
             $this->time = $opt['time'];
         } else {
-            $this->time = date('Y-m-d H:i:sO');
+            $this->time = static::formatTimestamp(time());
         }
         if (!empty($opt['new_record']) && $opt['new_record'] === false) {
             $this->new_record = false;
@@ -207,7 +195,7 @@ class Activity
      *
      * @return bool
      */
-    public function delete()
+    public function delete($showLast = true)
     {
         if ($this->new_record === true) {
             return false;
@@ -219,7 +207,7 @@ class Activity
         if (!empty($this->object)) {
             Connection::delete(static::indexTableName(), static::schema(), ['object' => $this->object, 'id' => $this->id]);
             if ($showLast) {
-                $last = Connection::select(static::indexTableName(), static::schema(), '*', ['object' => $object])->first();
+                $last = Connection::select(static::indexTableName(), static::schema(), '*', ['object' => $this->object])->first();
             }
         }
         return static::deleteFromFeed($this->id, $last);
@@ -267,6 +255,11 @@ class Activity
      */
     protected function update()
     {
-        return Connection::update((static::tableName(), static::schema(), ['id' => $this->id], $this->toArray());
+        return Connection::update(static::tableName(), static::schema(), ['id' => $this->id], $this->toArray());
+    }
+
+    protected static function formatTimestamp($time)
+    {
+        return date('Y-m-d H:i:sO', $time);
     }
 }

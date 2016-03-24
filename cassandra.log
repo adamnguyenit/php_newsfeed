@@ -1,5 +1,0 @@
-23-03-2016 09:34:24 UTC [ERROR] Host 127.0.0.1 had the following error on startup: Received error response 'Keyspace 'rails_newsfeed_test' does not exist' (0x02002200) (src/connection.cpp:813)
-23-03-2016 09:36:47 UTC [ERROR] Host 127.0.0.1 had the following error on startup: Received error response 'Keyspace 'this_is_a_non-existed_keyspace' does not exist' (0x02002200) (src/connection.cpp:813)
-23-03-2016 09:40:54 UTC [ERROR] Host 127.0.0.1 had the following error on startup: Received error response 'Keyspace 'rails_newsfeed_test' does not exist' (0x02002200) (src/connection.cpp:813)
-23-03-2016 09:41:22 UTC [ERROR] Host 127.0.0.1 had the following error on startup: Received error response 'Keyspace 'rails_newsfeed_test' does not exist' (0x02002200) (src/connection.cpp:813)
-23-03-2016 09:51:36 UTC [ERROR] Host 127.0.0.1 had the following error on startup: Received error response 'Keyspace 'rails_newsfeed_test0' does not exist' (0x02002200) (src/connection.cpp:813)
